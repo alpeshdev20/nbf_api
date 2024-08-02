@@ -11,12 +11,11 @@ class BasicAuthentication
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $authorizationHeader = $request->header('Authorization');
+        $authorizationHeader = $request->header('Authorization');       
 
         if (!$this->isValidBasicAuth($authorizationHeader)) {
            return ApiResponseHandler::error('UNAUTHORIZED', 401);
         }
-
         return $next($request);
     }
 
@@ -33,6 +32,7 @@ class BasicAuthentication
         }
 
         $credentials = base64_decode($credentials);
+
         list($username, $password) = explode(':', $credentials, 2);
 
         $validUsername = env('BASIC_AUTH_USERNAME');

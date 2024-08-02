@@ -55,7 +55,7 @@ class Kernel extends HttpKernel
         'api-auth-token' => [
             \App\Http\Middleware\Api\BasicAuthentication::class,
             \App\Http\Middleware\Api\ApiKey::class,
-            \App\Http\Middleware\Api\JwtMiddleware::class
+            \App\Http\Middleware\Api\JwtMiddleware::class,
         ],
     ];
 
