@@ -143,6 +143,9 @@ Route::middleware('api-auth-token')->group(function () {
         //* Update Profile
         Route::post('/profile/update', [Consumers::class, 'update_profile']);
 
+        // cancel-subscription
+        Route::post('/cancel-subscription/{id}', [Subscription::class, 'cancelSubscription']);
+
         //* Logout
         Route::post('/sign-out', [Consumers::class, 'sign_out']);
 
@@ -164,7 +167,7 @@ Route::middleware('api-auth-token')->group(function () {
         Route::get('/info/{id}', [Resources::class, 'get_resource_info']);
 
         //* Related Rosource
-        Route::get('/related-resources/{id}', [Resources::class, 'get_related_resources']);
+        // Route::get('/related-resources/{id}', [Resources::class, 'get_related_resources']);
 
         //* Rosource Episodes
         Route::get('/resource-episodes/{id}', [Resources::class, 'get_resources_episodes']);

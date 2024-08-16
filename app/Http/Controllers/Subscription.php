@@ -144,8 +144,7 @@ class Subscription extends Controller
             $decryptedId = decrypt($id);
 
             // Fetch the active subscription
-            $activeSubscription = UsersActiveSubscriptions::where('user_id', $decryptedId)->first();
-
+            $activeSubscription = UsersActiveSubscriptions::where(['user_id'=> $decryptedId ,'status' =>1 ])->first();
             if ($activeSubscription) {
 
                 $activeSubscription->update(['status' => '0']);
