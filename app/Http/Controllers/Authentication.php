@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ApiResponseHandler;
-use App\Mail\OtpForCreateAccount;
-use App\Mail\OtpForForgotPassword;
+use Carbon\Carbon;
 use App\Models\Customers;
 use App\Models\OtpMaster;
-use App\Models\PreRegistrations;
-use App\Models\RegistrationTokens;
-use App\Models\UsersActiveSubscriptions;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
+use App\Models\UsersResources;
+use App\Models\PreRegistrations;
+use App\Mail\OtpForCreateAccount;
+use App\Mail\OtpForForgotPassword;
+use App\Models\RegistrationTokens;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ApiResponseHandler;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\UsersActiveSubscriptions;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -165,6 +166,20 @@ class Authentication extends Controller
             $user->save();
 
 
+            //create UsersResources
+            $signUp = new UsersResources();
+            $signUp->resource_type = 'Signup Page';
+            $signUp->name = $userInfo->name;
+            $signUp->email_address = $userInfo->email;
+            // $signUp->password = $userInfo->password;
+            $signUp->mobile_number = $userInfo->mobile;
+            $signUp->birth_date = $userInfo->birthday;
+            $signUp->gender = $userInfo->gender;
+            $signUp->preferred_segment = $userInfo->preferred_segment;
+            $signUp->class = $userInfo->class;
+            $signUp->personal_address = $userInfo->personal_address;
+            $signUp->institution_address = $userInfo->institute_address;
+            $signUp->save();
 
             //* Markingid as created accoungt
             $userInfo->is_account_created = "Yes";
@@ -254,7 +269,6 @@ class Authentication extends Controller
                 'message' => "success",
                 'response' => $userInfo
             ], 200)->withCookie($cookie);
-
         } catch (\Exception $e) {
             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
         }

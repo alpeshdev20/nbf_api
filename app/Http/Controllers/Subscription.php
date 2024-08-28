@@ -16,17 +16,17 @@ class Subscription extends Controller
 
         $data = SubscriptionPlans::where('price', '!=', 0)->get();
         $plan = $this->transformData($data);
-            
+
         return ApiResponseHandler::successWithData($plan, "success", 200);
     }
-        
+
     function transformData($data) {
         $result = [];
-            
+
         foreach ($data as $plan) {
             $category = $this->getParentCategoryName($plan['plan_parent_category_id']);
             $subCategory = $this->getSubCategoryName($plan['plan_category']);
-            
+
             // Check if category exists
             $categoryIndex = null;
             foreach ($result as $index => $item) {
@@ -35,7 +35,7 @@ class Subscription extends Controller
                     break;
                 }
             }
-            
+
             // If category doesn't exist, create it
             if ($categoryIndex === null) {
                 $result[] = [
@@ -43,10 +43,10 @@ class Subscription extends Controller
                     'category' => $category,
                     'sub_category' => []
                 ];
-        
+
                 $categoryIndex = count($result) - 1;
             }
-            
+
             // Check if sub-category exists
             $subCategoryIndex = null;
             foreach ($result[$categoryIndex]['sub_category'] as $index => $subCat) {
@@ -55,7 +55,7 @@ class Subscription extends Controller
                     break;
                     }
             }
-            
+
             // If sub-category doesn't exist, create it
             if ($subCategoryIndex === null) {
                 $result[$categoryIndex]['sub_category'][] = [
@@ -66,7 +66,7 @@ class Subscription extends Controller
 
                 $subCategoryIndex = count($result[$categoryIndex]['sub_category']) - 1;
             }
-            
+
             // Add the package
             $result[$categoryIndex]['sub_category'][$subCategoryIndex]['packages'][] = [
                 'id' => $plan['id'],
@@ -75,10 +75,10 @@ class Subscription extends Controller
                 'package_covers' => $this->getPackageCovers($plan)
             ];
         }
-              
+
         return $result;
     }
-            
+
     function getSubCategoryName($category) {
         switch ($category) {
             case 1: return 'BASIC';
@@ -86,7 +86,7 @@ class Subscription extends Controller
             default: return 'UNKNOWN';
         }
     }
-        
+
     function getParentCategoryName($category) {
 
         $parentCategories = PlanParentCategory::all();
@@ -145,21 +145,20 @@ function getPackageCovers($plan) {
                     },
                 ],
             ]);
-    
+
             if ($validator->fails()) {
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
-    
+
             // Decrypt the ID
             $decryptedId = decrypt($id);
-    
+
             // Fetch the active subscription
-            $activeSubscription = UsersActiveSubscriptions::where('user_id', $decryptedId)->first();
-    
+            $activeSubscription = UsersActiveSubscriptions::where(['user_id'=> $decryptedId ,'status' =>1 ])->first();
             if ($activeSubscription) {
-                
+
                 $activeSubscription->update(['status' => '0']);
-                
+
                 return ApiResponseHandler::success($activeSubscription, 200);
             } else {
                 return ApiResponseHandler::error("No active subscription found for the user.", 404);

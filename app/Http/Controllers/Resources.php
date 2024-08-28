@@ -378,7 +378,6 @@ class Resources extends Controller
         }
 
         $isAllowed = false;
-
         //* getting customer information
         $user = auth('customers')->user();
 
@@ -418,10 +417,36 @@ class Resources extends Controller
         } else {
             $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->first();
             $plan_info = SubscriptionPlans::find($user_subscription->subscription_id);
+<<<<<<< HEAD
          
             if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
 
                               if (in_array($resourceInfo->material_type, explode(',', $plan_info->allowed_material))) {
+=======
+            if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
+
+                // --------------------------previous code ----------------------------
+                //     if ($plan_info->configuration_type == 0 || $plan_info->configuration_type == null) {
+                //         if (in_array($resourceInfo->material_type, explode(',', $plan_info->allowed_material))) {
+                //             if ($plan_info->plan_category == 1 && $resourceInfo->mat_category <= 1) {
+                //                 $isAllowed = true;
+                //         } else if ($resourceInfo->mat_category > $plan_info->plan_category) {
+                //             $isAllowed = false;
+                //         }
+                //     } else {
+                //         $isAllowed = false;
+                //     }
+                // } else {
+                //     $allowedPublisher =  in_array($resourceInfo->publisher_id, explode(',', $plan_info->allowed_publisher)) ? true : false;
+                //     $allowedGeners =  in_array($resourceInfo->genre_id, explode(',', $plan_info->allowed_genres)) ? true : false;
+                //     $allowedDepartments =  in_array($resourceInfo->department_id, explode(',', $plan_info->allowed_department)) ? true : false;
+                //     $allowedSubject =  in_array($resourceInfo->subject_id, explode(',', $plan_info->allowed_subject)) ? true : false;
+                //     $isAllowed = $allowedPublisher && $allowedGeners && $allowedDepartments && $allowedSubject ? true : false;
+                // }
+                // --------------------------End previous code----------------------------
+                // --------------------------new Code  to accsees resource
+                if (in_array($resourceInfo->material_type, explode(',', $plan_info->allowed_material))) {
+>>>>>>> 9933b658c329c955229ef7552218ada722b0c1ed
 
                     if ($plan_info->plan_category >= $resourceInfo->mat_category) {
                         $isAllowed = true;
@@ -433,7 +458,12 @@ class Resources extends Controller
                 } else {
                     $isAllowed = false;
                 }
+<<<<<<< HEAD
                           }
+=======
+                // --------------------------End New code to accsees resource----------------------------
+            }
+>>>>>>> 9933b658c329c955229ef7552218ada722b0c1ed
         }
 
 
