@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\PublishersLogo;
-use App\Models\UsersResources;
 use App\Helpers\ApiResponseHandler;
 use App\Mail\PublisherRegistration;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Mail;
 use App\Models\InstitutionRegistrations;
+use App\Models\PublishersLogo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class Institutions extends Controller
 {
@@ -50,28 +48,6 @@ class Institutions extends Controller
             $register->summary = e(trim($request->input('summary')));
             $register->save();
 
-            $resourceType = trim($request->input('resource_type'));
-            $Institutions_Registration = new UsersResources();
-
-            // Conditional logic to set the resource_type based on context
-            if ($resourceType === 'institutions') {
-                $Institutions_Registration->resource_type = e('Netbookflix for Institutions');
-            } elseif ($resourceType === 'instructors') {
-                $Institutions_Registration->resource_type = e('NBF for Instructors');
-            } else {
-                // Handle other cases or provide a default value
-                $Institutions_Registration->resource_type = e(trim($request->input('resource_type')));
-            }
-
-            $Institutions_Registration->name = e(trim($request->input('contact_person')));
-            $Institutions_Registration->email_address = e(trim($request->input('contact_person_email')));
-            $Institutions_Registration->contact_number = e(trim($request->input('contact_person_mobile_no')));
-            $Institutions_Registration->school_college_university_name = e(trim($request->input('institute_name')));
-            $Institutions_Registration->student_enrollment = e(trim($request->input('student_enrollment')));
-            $Institutions_Registration->summary = e(trim($request->input('summary')));
-
-            $Institutions_Registration->save();
-
             return ApiResponseHandler::success("success", 200);
         } catch (\Exception $e) {
             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
@@ -98,22 +74,6 @@ class Institutions extends Controller
             if ($validator->fails()) {
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
-        $publisher = new UsersResources();
-        $publisher->resource_type = 'NBF for Publishers and Authors';
-        $publisher->name = e(trim($request->input('publisher_name')));
-        $publisher->email_address = e(trim($request->input('email')));
-        $publisher->mobile_number = e(trim($request->input('mobile_number')));
-
-        // Handle the file upload
-        if ($request->hasFile('attachment')) {
-            $file = $request->file('attachment');
-            $destinationPath = 'uploads/NBF_Publishers_Authors_Resource_Catalogue';
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path($destinationPath), $fileName);
-            $publisher->resource_catalogue = $fileName;
-        }
-
-        $publisher->save();
 
             $taskDetails = [
                 'subject' => "New Publisher Registration",
