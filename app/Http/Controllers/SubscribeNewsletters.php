@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ApiResponseHandler;
 use App\Models\Newsletters;
 use Illuminate\Http\Request;
+use App\Models\UsersResources;
+use App\Helpers\ApiResponseHandler;
 use Illuminate\Support\Facades\Validator;
 
 class SubscribeNewsletters extends Controller
@@ -32,6 +33,11 @@ class SubscribeNewsletters extends Controller
                 $subscribeNewsletter = new Newsletters();
                 $subscribeNewsletter->email = e(trim($request->input('email')));
                 $subscribeNewsletter->save();
+
+                $newsletterResource = new UsersResources();
+                $newsletterResource->resource_type = 'Newsletter';
+                $newsletterResource->email_address = e(trim($request->input('email')));
+                $newsletterResource->save();
                 return ApiResponseHandler::success("success", 200);
             }
 
@@ -39,7 +45,22 @@ class SubscribeNewsletters extends Controller
             if ($isSubscribed->status === "Inactive") {
                 $isSubscribed->status = "Active";
                 $isSubscribed->save();
+
+                $newsletterResource = UsersResources::where(['email_address' => e(trim($request->input('email'))), 'resource_type' => 'Newsletter'])->first();
+                if ($newsletterResource) {
+                    // do nothing as of now
+                } else {
+                    // Create a record in UsersResources
+                    $newsletterResource = new UsersResources();
+                    $newsletterResource->resource_type = 'Newsletter';
+                    $newsletterResource->email_address = e(trim($request->input('email')));
+                    $newsletterResource->save();
+                }
+
                 return ApiResponseHandler::success("success", 200);
+            }
+            else{
+
             }
 
             return ApiResponseHandler::error("ALREADY_SUBSCRIBED", 400);
