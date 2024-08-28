@@ -417,12 +417,6 @@ class Resources extends Controller
         } else {
             $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->first();
             $plan_info = SubscriptionPlans::find($user_subscription->subscription_id);
-<<<<<<< HEAD
-         
-            if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
-
-                              if (in_array($resourceInfo->material_type, explode(',', $plan_info->allowed_material))) {
-=======
             if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
 
                 // --------------------------previous code ----------------------------
@@ -446,7 +440,6 @@ class Resources extends Controller
                 // --------------------------End previous code----------------------------
                 // --------------------------new Code  to accsees resource
                 if (in_array($resourceInfo->material_type, explode(',', $plan_info->allowed_material))) {
->>>>>>> 9933b658c329c955229ef7552218ada722b0c1ed
 
                     if ($plan_info->plan_category >= $resourceInfo->mat_category) {
                         $isAllowed = true;
@@ -458,12 +451,8 @@ class Resources extends Controller
                 } else {
                     $isAllowed = false;
                 }
-<<<<<<< HEAD
-                          }
-=======
                 // --------------------------End New code to accsees resource----------------------------
             }
->>>>>>> 9933b658c329c955229ef7552218ada722b0c1ed
         }
 
 
