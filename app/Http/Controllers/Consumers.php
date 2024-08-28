@@ -128,11 +128,17 @@ class Consumers extends Controller
             auth('customers')->logout();
 
 
-            $cookie = Cookie::make('session', "", 0)
-                ->withSecure(env('COOKIE_SECURE'))
-                ->withHttpOnly(true)
-                ->withSameSite('Lax')
-                ->withDomain(env('COOKIE_DOMAIN'));
+            //$cookie = Cookie::make('session', "", 0)
+               // ->withSecure(env('COOKIE_SECURE'))
+                //->withHttpOnly(true)
+                //->withSameSite('Lax')
+                //->withDomain(env('COOKIE_DOMAIN'));
+                     $cookie = Cookie::forget('session') 
+            ->withSecure(env('COOKIE_SECURE'))
+            ->withHttpOnly(true)
+            ->withSameSite('Lax')
+            ->withDomain(env('COOKIE_DOMAIN'))
+            ->withPath('/'); 
 
             return response()->json([
                 'status' => 200,

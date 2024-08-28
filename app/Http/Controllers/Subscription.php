@@ -98,13 +98,32 @@ class Subscription extends Controller
         }
     }
 
-    function getPackageCovers($plan) {
+   // function getPackageCovers($plan) {
+       // $covers = [];
+       // if ($plan['description']) {
+           // $covers[] = ['content' => $plan['description']];
+        //}
+        //return $covers;
+    //}
+
+
+function getPackageCovers($plan) {
         $covers = [];
-        if ($plan['description']) {
-            $covers[] = ['content' => $plan['description']];
+
+        // Check if 'description' is set and not empty
+        if (isset($plan['description']) && !empty($plan['description'])) {
+            // Split the description by comma
+            $descriptions = explode(',,', $plan['description']);
+
+            // Map each part to an array of covers
+            foreach ($descriptions as $desc) {
+                // Trim any extra spaces and add to covers array
+                $covers[] = ['content' => trim($desc)];
+            }
         }
         return $covers;
     }
+
 
     function cancelSubscription($id)
     {
