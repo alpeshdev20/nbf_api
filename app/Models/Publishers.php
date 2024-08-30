@@ -9,5 +9,5 @@ class Publishers extends Model
 {
     use HasFactory;
 
-    protected $table = "publisher_registrations";
+    protected $table = "app_publishers";
 }
