@@ -112,7 +112,7 @@ class Institutions extends Controller
             $file->move(public_path($destinationPath), $fileName);
             $publisher->resource_catalogue = $fileName;
         }
-
+		
         $publisher->save();
 
             $taskDetails = [
@@ -120,7 +120,7 @@ class Institutions extends Controller
                 'name' => e(trim($request->input('publisher_name'))),
                 'email' => e(trim($request->input('email'))),
                 'contact_number' => e(trim($request->input('mobile_number'))),
-                'attachment' => $request->file('attachment'),
+                //'attachment' => $filePath,
             ];
 
             //* Sending Email
@@ -129,7 +129,7 @@ class Institutions extends Controller
             return ApiResponseHandler::success("success", 200);
         } catch (\Exception $e) {
             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
-        }
+       }
     }
 
 
