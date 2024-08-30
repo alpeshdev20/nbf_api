@@ -14,7 +14,9 @@ class Subscription extends Controller
 {
     function get_subscription_plans() {
 
-        $data = SubscriptionPlans::where('status', 1)->get();
+        $data = SubscriptionPlans::where('price', '!=', 0)
+        ->where('status', 1)
+        ->get();
         $plan = $this->transformData($data);
 
         return ApiResponseHandler::successWithData($plan, "success", 200);
