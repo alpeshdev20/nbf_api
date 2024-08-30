@@ -382,7 +382,7 @@ class Resources extends Controller
         $user = auth('customers')->user();
 
         //* getting Item information
-        $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code')->find(e(trim(decrypt($id))));
+        $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->find(e(trim(decrypt($id))));
 
         //if ($resourceInfo->mat_category == 0) {
            // $isAllowed = true;
@@ -415,7 +415,7 @@ class Resources extends Controller
        if ($resourceInfo->mat_category == 0) {
             $isAllowed = true;
         } else {
-            $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->first();
+            $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->orderBy('id', "DESC")->first();
             $plan_info = SubscriptionPlans::find($user_subscription->subscription_id);
             if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
 
@@ -457,12 +457,13 @@ class Resources extends Controller
 
 
         $resourceInfo->resource_id = encrypt($resourceInfo->id);
-        $resourceInfo->resource_name = $resourceInfo->book_name . " " . $resourceInfo->mat_category;
+        $resourceInfo->resource_name = $resourceInfo->book_name;
         $resourceInfo->author = $resourceInfo->author;
         $resourceInfo->isbn_code = $resourceInfo->Isbn_code;
         $resourceInfo->length = $resourceInfo->length;
         $resourceInfo->resource_image = $resourceInfo->book_image ? env('RESOURCES_URL') . $resourceInfo->book_image : "";
-        $resourceInfo->publisher_name = getPublisherInfo($resourceInfo->publisher_id)['company_name'] ?? "";
+        // $resourceInfo->publisher_name = getPublisherInfo($resourceInfo->publisher_id)['company_name'] ?? "";
+        $resourceInfo->publisher_name = getPublisherInfo($resourceInfo->publisher_id)['publisher'] ?? "";
         $resourceInfo->language = getLanguageInfo($resourceInfo->language)['language_name'] ?? "";
         $resourceInfo->material_type = getMaterialTypeInfo($resourceInfo->material_type)['material_type'] ?? "";
         $resourceInfo->material_category = getMaterialCategoryInfo($resourceInfo->mat_category) ?? "";
@@ -489,6 +490,7 @@ class Resources extends Controller
 
 
         unset($resourceInfo->id);
+        unset($resourceInfo->Isbn_Code);
         unset($resourceInfo->publisher_id);
         unset($resourceInfo->book_name);
         unset($resourceInfo->book_image);

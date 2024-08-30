@@ -90,9 +90,10 @@ class Institutions extends Controller
                 'publisher_name' => 'required|string|max:150|min:3',
                 'email' => 'required|email|max:100|min:8|email:rfc,dns',
                 'mobile_number' => 'required|digits:10',
-                'attachment' => 'required|mimetypes:application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv',
-            ], [
-                'attachment.mimetypes' => 'Attachment must be pdf,excel or csv.'
+                'attachment' => 'required|mimetypes:application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],  [
+                'attachment.required' => 'The catalogue field is required.',
+                'attachment.mimetypes' => 'Catalogue must be pdf,excel,csv or word file.'
             ]);
 
             if ($validator->fails()) {
@@ -120,7 +121,7 @@ class Institutions extends Controller
                 'name' => e(trim($request->input('publisher_name'))),
                 'email' => e(trim($request->input('email'))),
                 'contact_number' => e(trim($request->input('mobile_number'))),
-                'attachment' => $request->file('attachment'),
+                // 'attachment' => $request->file('attachment'),
             ];
 
             //* Sending Email
