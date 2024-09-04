@@ -144,7 +144,16 @@ class UserStats extends Controller
 
             $user = auth('customers')->user();
             $book_id = decrypt(e(trim($request->input('id'))));
-            $read_time = e(trim($request->input('read_time')));
+            $read_time_milliseconds = e(trim($request->input('read_time')));
+            $read_time_milliseconds = (int)$read_time_milliseconds;
+
+            // Convert milliseconds to seconds
+            $read_time_seconds = $read_time_milliseconds / 1000;
+
+            // Optionally, round or format the result
+            $read_time_seconds = round($read_time_seconds); // Rounds to the nearest
+
+            $read_time = $read_time_seconds;
 
             //* Transaction Start
             DB::beginTransaction();
