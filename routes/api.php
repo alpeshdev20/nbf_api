@@ -167,7 +167,7 @@ Route::middleware('api-auth-token')->group(function () {
         Route::get('/info/{id}', [Resources::class, 'get_resource_info']);
 
         //* Related Rosource
-        // Route::get('/related-resources/{id}', [Resources::class, 'get_related_resources']);
+         Route::get('/related-resources/{id}', [Resources::class, 'get_related_resources']);
 
         //* Rosource Episodes
         Route::get('/resource-episodes/{id}', [Resources::class, 'get_resources_episodes']);
