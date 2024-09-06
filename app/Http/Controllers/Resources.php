@@ -416,7 +416,15 @@ class Resources extends Controller
             $isAllowed = true;
         } else {
             $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->orderBy('id', "DESC")->first();
+           
+            // Check if the subscription was found
+       if ($user_subscription) {
             $plan_info = SubscriptionPlans::find($user_subscription->subscription_id);
+
+             // Check if the plan information was found and if the subscription is still valid
+        if ($plan_info && $user_subscription->plan_end_date >= Carbon::now()) {
+
+
             if (!empty($user_subscription) && !empty($plan_info)  && $user_subscription->plan_end_date >= Carbon::now()) {
 
                 // --------------------------previous code ----------------------------
@@ -453,6 +461,16 @@ class Resources extends Controller
                 }
                 // --------------------------End New code to accsees resource----------------------------
             }
+            } else {
+                // Handle the case where there is no active subscription
+                $isAllowed = false;
+            }
+        }
+        else {
+            // Handle the case where there is no active subscription
+            $isAllowed = false;
+        }
+
         }
 
 
