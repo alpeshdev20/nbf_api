@@ -35,7 +35,7 @@ class Authentication extends Controller
                 'mobile' => 'required|numeric|digits:10|unique:u_logins,mobile',
                 'password' => 'required|string|min:8',
                 'dob' => 'required|date',
-                'gender' => 'required|in:Male,Female',
+                'gender' => 'required|in:Male,Female,Others',
                 'segment' => 'required|in:K12/School,Higher Education',
                 'class' => 'required|numeric|exists:class_master,id',
                 'personal_address' => 'required|string',
