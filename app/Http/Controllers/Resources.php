@@ -380,7 +380,14 @@ class Resources extends Controller
         $isAllowed = false;
         //* getting customer information
         $user = auth('customers')->user();
-
+       // Check if the user is not null
+        if ($user !== null) {
+            // Safely access the user type
+            $userType = $user->type;
+        } else {
+            // You can set a default value or handle the error as needed
+            $userType = ''; // Default value or handle error appropriately
+        }
         //* getting Item information
         $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->find(e(trim(decrypt($id))));
 
@@ -414,7 +421,12 @@ class Resources extends Controller
 
        if ($resourceInfo->mat_category == 0) {
             $isAllowed = true;
-        } else {
+        }
+        else if($userType == 'publisher' || $userType == 'teacher')
+        {
+            $isAllowed =true;
+        }  
+        else {
             $user_subscription = UsersActiveSubscriptions::where(['user_id' => $user->id  , 'status' => '1'])->orderBy('id', "DESC")->first();
            
             // Check if the subscription was found
