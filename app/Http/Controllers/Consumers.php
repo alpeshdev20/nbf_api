@@ -36,6 +36,8 @@ class Consumers extends Controller
             unset($userInfo->registration_type);
             unset($userInfo->registration_token);
 
+            // Set default value for mobile if not provided
+            $userInfo->mobile = $userInfo->mobile ?? 'No mobile number provided';
 
             //* get user Plan info
 
