@@ -37,7 +37,7 @@ class Authentication extends Controller
                 'dob' => 'required|date',
                 'gender' => 'required|in:Male,Female,Others',
                 'segment' => 'required|in:K12/School,Higher Education',
-                'class' => 'required|numeric|exists:class_master,id',
+                'class' => 'required_if:segment,K12/School|nullable|numeric|exists:class_master,id',
                 'personal_address' => 'required|string',
                 'institute_address' => 'required|string',
                 'registration_type' => 'required|in:0,3',
@@ -72,7 +72,7 @@ class Authentication extends Controller
             $pre_register->birthday = e(trim($request->input('dob')));
             $pre_register->gender = e(trim($request->input('gender')));
             $pre_register->preferred_segment = e(trim($request->input('segment')));
-            $pre_register->class = e(trim($request->input('class')));
+            $pre_register->class = $request->has('class') && trim($request->input('class')) !== '' ? e(trim($request->input('class'))) : null;
             $pre_register->personal_address = e(trim($request->input('personal_address')));
             $pre_register->institute_address = e(trim($request->input('institute_address')));
             $pre_register->otp = $otp;
