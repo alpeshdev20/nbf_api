@@ -158,7 +158,7 @@ class Authentication extends Controller
             $user->class = $userInfo->class;
             $user->personal_address = $userInfo->personal_address;
             $user->institute_address = $userInfo->institute_address;
-
+            $user->type ="App User";    
             $user->registration_type = $userInfo->registration_type;
             $user->registration_token = $userInfo->registration_token;
 
@@ -233,6 +233,13 @@ class Authentication extends Controller
                 return ApiResponseHandler::error("UNAUTHORIZED_USER", 401);
             }
 
+            //check user is active or not 
+            if ($user->is_active != 1) {
+                return ApiResponseHandler::error("You are an inactive user. Please contact support.", 403);
+            }
+            else{
+                // do nothing as of now
+            }
 
             if (!Hash::check(e(trim($request->input('password'))), $user->password)) {
                 return ApiResponseHandler::error("INVALID_CREDENTIALS", 400);
