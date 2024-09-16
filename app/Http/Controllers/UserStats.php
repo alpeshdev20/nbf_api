@@ -160,19 +160,21 @@ class UserStats extends Controller
 
 
             //! For App book analytics
-            $bookAnalytics = AppBooksAnalytics::where("user_id", $user->id)->where("book_id", $book_id)->orderBy('id', "DESC")->first();
-            if ($bookAnalytics === null) {
+             $bookAnalytics = AppBooksAnalytics::where("user_id", $user->id)->where("book_id", $book_id)->orderBy('id', "DESC")->first();
+             if ($bookAnalytics === null) {
                 $appStats = new AppBooksAnalytics();
 
                 $appStats->user_id = $user->id;
                 $appStats->book_id = $book_id;
                 $appStats->read_time = $read_time;
+                // Explicitly set the created_at field if needed
+                $appStats->created_at = now(); // or use a specific timestamp if required
 
                 $appStats->save();
-            } else {
-                $bookAnalytics->read_time = (int)$bookAnalytics->read_time +  $read_time;
-                $bookAnalytics->save();
-            }
+             } else {
+                 $bookAnalytics->read_time = (int)$bookAnalytics->read_time +  $read_time;
+                 $bookAnalytics->save();
+             }
 
 
             //! For Raw read log
@@ -181,36 +183,42 @@ class UserStats extends Controller
             $rawReadLog->user_id = $user->id;
             $rawReadLog->book_id = $book_id;
             $rawReadLog->read_time = $read_time;
+            $rawReadLog->created_at = now(); // or use a specific timestamp if required
 
             $rawReadLog->save();
 
 
             //! For User Statics
-            $userStatistics = UserStatistics::where("user_id", $user->id)->orderBy('id', "DESC")->first();
-            if ($userStatistics === null) {
+            // $userStatistics = UserStatistics::where("user_id", $user->id)->orderBy('id', "DESC")->first();
+            // if ($userStatistics === null) {
                 $userStats = new UserStatistics();
 
                 $userStats->user_id = $user->id;
                 $userStats->read_time = $read_time;
+                // Explicitly set the created_at field if needed
+                $userStats->created_at = now(); // or use a specific timestamp if required
 
                 $userStats->save();
-            } else {
-                $userStatistics->read_time = (int)$userStatistics->read_time +  $read_time;
-                $userStatistics->save();
-            }
+            // } else {
+            //     $userStatistics->read_time = (int)$userStatistics->read_time +  $read_time;
+            //     $userStatistics->save();
+            // }
 
 
             //! For Book Stats
-            $bookStatistics = BookStatistics::where("book_id", $book_id)->orderBy('id', "DESC")->first();
-            if ($bookStatistics === null) {
+            // $bookStatistics = BookStatistics::where("book_id", $book_id)->orderBy('id', "DESC")->first();
+            // if ($bookStatistics === null) {
                 $bookStats = new BookStatistics();
                 $bookStats->book_id = $book_id;
                 $bookStats->read_time = $read_time;
+                // Explicitly set the created_at field if needed
+                $bookStats->created_at = now(); // or use a specific timestamp if required
+
                 $bookStats->save();
-            } else {
-                $bookStatistics->read_time = (int)$bookStatistics->read_time +  $read_time;
-                $bookStatistics->save();
-            }
+            // } else {
+            //     $bookStatistics->read_time = (int)$bookStatistics->read_time +  $read_time;
+            //     $bookStatistics->save();
+            // }
 
 
 
