@@ -35,6 +35,7 @@ class Authentication extends Controller
                 'mobile' => 'required|numeric|digits:10|unique:u_logins,mobile',
                 'password' => 'required|string|min:8',
                 'dob' => 'required|date',
+                'city' => 'required|string',
                 'gender' => 'required|in:Male,Female,Others',
                 'segment' => 'required|in:K12/School,Higher Education',
                 'class' => 'required_if:segment,K12/School|nullable|numeric|exists:class_master,id',
@@ -52,12 +53,12 @@ class Authentication extends Controller
 
 
             //* Checking Registraion TOken is valid or not
-            if ((int)e(trim($request->input('registration_type'))) === 3) {
-                $isValidToken = RegistrationTokens::where('token', e(trim($request->input('registration_token'))))->where('active', 1)->first();
-                if ($isValidToken === null) {
-                    return ApiResponseHandler::error("INVALID_TOKEN", 500);
-                }
-            }
+            // if ((int)e(trim($request->input('registration_type'))) === 3) {
+            //     $isValidToken = RegistrationTokens::where('token', e(trim($request->input('registration_token'))))->where('active', 1)->first();
+            //     if ($isValidToken === null) {
+            //         return ApiResponseHandler::error("INVALID_TOKEN", 500);
+            //     }
+            // }
 
             //* Generating OTP
             $otp = rand(100000, 999999);
@@ -69,6 +70,7 @@ class Authentication extends Controller
             $pre_register->email = e(trim($request->input('email')));
             $pre_register->mobile = e(trim($request->input('mobile')));
             $pre_register->password = bcrypt(e(trim($request->input('password'))));
+            $pre_register->city = e(trim($request->input('city')));
             $pre_register->birthday = e(trim($request->input('dob')));
             $pre_register->gender = e(trim($request->input('gender')));
             $pre_register->preferred_segment = e(trim($request->input('segment')));
@@ -156,6 +158,7 @@ class Authentication extends Controller
             $user->gender = $userInfo->gender;
             $user->preferred_segment = $userInfo->preferred_segment;
             $user->class = $userInfo->class;
+            $user->city = $userInfo->city;
             $user->personal_address = $userInfo->personal_address;
             $user->institute_address = $userInfo->institute_address;
             $user->type ="App User";    
