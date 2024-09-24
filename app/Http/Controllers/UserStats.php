@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ApiResponseHandler;
-use App\Models\AppBooksAnalytics;
 use App\Models\Books;
-use App\Models\BookStatistics;
 use App\Models\HasReads;
 use App\Models\RawReadLogs;
-use App\Models\UserStatistics;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Models\BookStatistics;
+use App\Models\UserStatistics;
+use App\Models\AppBooksAnalytics;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ApiResponseHandler;
+use App\Models\UserMonthlyReadTime;
+use Illuminate\Support\Facades\Validator;
 
 class UserStats extends Controller
 {
 
     //* Check is Book Read
-    function is_book_read($id)
+    function is_book_read($slug)
     {
         try {
-            //* Validating request
-            $validator = Validator::make(['id' => $id], [
-                'id' =>  [
+        //     //* Validating request
+            $validator = Validator::make(['slug' => $slug], [
+                'slug' =>  [
                     'required',
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                             $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            
+                            if (!Books::where('slug', $slug)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -44,10 +45,18 @@ class UserStats extends Controller
 
 
             $user = auth('customers')->user();
+            $getBook = Books::where('slug', $slug)->first();
 
+            $book_id = '';
+            if ($getBook) {
+                $book_id = $getBook->id;
+            } else {
+                // Handle the case where the book is not found
+                return ApiResponseHandler::error($validator->messages(), 404);
+            }
 
             //* Checking if user reads the book
-            $isRead = HasReads::where('user_id', $user->id)->where('book_id', decrypt(e(trim($id))))->first();
+            $isRead = HasReads::where('user_id', $user->id)->where('book_id', $book_id)->first();
             if ($isRead === null) {
                 return ApiResponseHandler::successWithData(['read' => false, 'page_number' => "0"], "success", 200);
             } else {
@@ -72,8 +81,7 @@ class UserStats extends Controller
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                            $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            if (!Books::where('slug', $value)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -89,16 +97,25 @@ class UserStats extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
+            $getBook = Books::where('slug', trim($request->input('id')))->first();
+
+            $book_id = '';
+            if ($getBook) {
+                $book_id = $getBook->id;
+            } else {
+                // Handle the case where the book is not found
+                return ApiResponseHandler::error($validator->messages(), 404);
+            }
 
             $user = auth('customers')->user();
 
             //* Checking if user reads the book
-            $isRead = HasReads::where('user_id', $user->id)->where('book_id', decrypt(e(trim($request->input('id')))))->first();
+            $isRead = HasReads::where('user_id', $user->id)->where('book_id', $book_id)->first();
             if ($isRead === null) {
                 //* Saving Book Info
                 $addReadStats = new HasReads();
                 $addReadStats->user_id = $user->id;
-                $addReadStats->book_id = decrypt(e(trim($request->input('id'))));
+                $addReadStats->book_id = $book_id;
                 $addReadStats->page_number = e(trim($request->input('page_number')));
 
                 $addReadStats->save();
@@ -124,8 +141,8 @@ class UserStats extends Controller
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                            $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            // $decryptedId = decrypt($value);
+                            if (!Books::where('slug', $value)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -141,9 +158,17 @@ class UserStats extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
+            $getBook = Books::where('slug', trim($request->input('id')))->first();
 
+            $book_id = '';
+            if ($getBook) {
+                $book_id = $getBook->id;
+            } else {
+                // Handle the case where the book is not found
+                return ApiResponseHandler::error($validator->messages(), 404);
+            }
             $user = auth('customers')->user();
-            $book_id = decrypt(e(trim($request->input('id'))));
+            // $book_id = e(trim($request->input('id')));
             $read_time_milliseconds = e(trim($request->input('read_time')));
             $read_time_milliseconds = (int)$read_time_milliseconds;
 
@@ -204,6 +229,30 @@ class UserStats extends Controller
             //     $userStatistics->save();
             // }
 
+            // $currentYear = date('Y');  // Get the current year
+            // $currentMonth = date('m'); // Get the current month
+
+            // // Check if there is already a record for this user, book, year, and month
+            // $monthlyReadTime = UserMonthlyReadTime::where('user_id', $user->id)
+            // ->where('book_id', $book_id)
+            // ->where('year', $currentYear)
+            // ->where('month', $currentMonth)
+            // ->first();
+
+            // if ($monthlyReadTime) {
+            //     // Update the existing record by adding the new read time
+            //     $monthlyReadTime->read_time += $read_time_seconds;
+            //     $monthlyReadTime->save();
+            // } else {
+            //     // Create a new record for this month
+            //     UserMonthlyReadTime::create([
+            //         'user_id' => $user->id,
+            //         'book_id' => $book_id,
+            //         'year' => $currentYear,
+            //         'month' => $currentMonth,
+            //         'read_time' => $read_time_seconds
+            //     ]);
+            // }
 
             //! For Book Stats
             // $bookStatistics = BookStatistics::where("book_id", $book_id)->orderBy('id', "DESC")->first();

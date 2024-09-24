@@ -167,13 +167,13 @@ Route::middleware('api-auth-token')->group(function () {
         Route::get('/info/{id}', [Resources::class, 'get_resource_info']);
 
         //* Related Rosource
-         Route::get('/related-resources/{id}', [Resources::class, 'get_related_resources']);
+         Route::get('/related-resources/{slug}', [Resources::class, 'get_related_resources']);
 
         //* Rosource Episodes
-        Route::get('/resource-episodes/{id}', [Resources::class, 'get_resources_episodes']);
+        Route::get('/resource-episodes/{slug}', [Resources::class, 'get_resources_episodes']);
 
         //* Rosource Wishlist
-        Route::post('/wishlist/{id}', [Resources::class, 'wishlist']);
+        Route::post('/wishlist/{slug}', [Resources::class, 'wishlist']);
     });
 
     //! Verify Session
@@ -183,7 +183,7 @@ Route::middleware('api-auth-token')->group(function () {
     //! User Book reads.analytics
     Route::prefix('users-stats')->group(function () {
         //* Check is book ready by user
-        Route::get('/is-book-read/{id}', [UserStats::class, 'is_book_read']);
+        Route::get('/is-book-read/{slug}', [UserStats::class, 'is_book_read']);
 
         //* Update book stats
         Route::post('/update-book-read-stats', [UserStats::class, 'update_book_read_stats']);
