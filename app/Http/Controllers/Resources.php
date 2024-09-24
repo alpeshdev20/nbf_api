@@ -31,7 +31,7 @@ class Resources extends Controller
             return ApiResponseHandler::error($validator->messages(), 400);
         }
 
-        $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
+        $query = Books::select('id', 'slug', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
 
 
         if ($age != 0) {
@@ -86,7 +86,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 4);
+            $query = Books::select('id','slug', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 4);
 
 
             if ($age != 0) {
@@ -141,7 +141,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 2);
+            $query = Books::select('id', 'slug', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 2);
 
 
             if ($age != 0) {
@@ -196,7 +196,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 3);
+            $query = Books::select('id','slug' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 3);
 
 
             if ($age != 0) {
@@ -254,7 +254,7 @@ class Resources extends Controller
             }
 
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
+            $query = Books::select('id','slug' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
 
 
             if ($age != 0) {
@@ -310,7 +310,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
+            $query = Books::select('id','slug' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
 
 
             if ($age != 0) {
@@ -352,24 +352,24 @@ class Resources extends Controller
 
 
     //* Get Resources Info Info
-    function get_resource_info($id)
+    function get_resource_info($slug)
     {
 
         //* Validating response
-        $validator = Validator::make(['id' => $id], [
-            'id' =>  [
+        $validator = Validator::make(['slug' => $slug], [
+            'slug' =>  [
                 'required',
                 'string',
-                function ($attribute, $value, $fail) {
-                    try {
-                        $decryptedId = decrypt($value);
-                        if (!Books::where('id', $decryptedId)->exists()) {
-                            return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
-                        }
-                    } catch (\Exception $e) {
-                        return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
-                    }
-                },
+                // function ($attribute, $value, $fail) {
+                //     try {
+                //         $decryptedId = decrypt($value);
+                //         if (!Books::where('slug', $decryptedId)->exists()) {
+                //             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
+                //         }
+                //     } catch (\Exception $e) {
+                //         return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
+                //     }
+                // },
             ],
         ]);
 
@@ -389,7 +389,8 @@ class Resources extends Controller
             $userType = ''; // Default value or handle error appropriately
         }
         //* getting Item information
-        $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->find(e(trim(decrypt($id))));
+        $resourceInfo = Books::select('id', 'slug', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->where('slug', trim($slug))->first();
+        $resourceInfoId = $resourceInfo->id;
 
         //if ($resourceInfo->mat_category == 0) {
            // $isAllowed = true;
@@ -418,7 +419,7 @@ class Resources extends Controller
                // $isAllowed = false;
            // }
        // }
-
+       
        if ($resourceInfo->mat_category == 0) {
             $isAllowed = true;
         }
@@ -508,7 +509,7 @@ class Resources extends Controller
             $resourceInfo->resource = "";
         }
 
-
+        $id =encrypt($resourceInfoId);
         //* getting Resouce Episodes
         $isResouceWishlisted = Wishlists::where('user_id', $user->id)->where('book_id', decrypt(e(trim($id))))->where('status', 'Active')->first();
         if ($isResouceWishlisted === null) {
@@ -536,19 +537,18 @@ class Resources extends Controller
 
 
     //* Related Resources
-    function get_related_resources($id)
+    function get_related_resources($slug)
     {
         try {
 
             //* Validating response
-            $validator = Validator::make(['id' => $id], [
+            $validator = Validator::make(['id' => $slug], [
                 'id' =>  [
                     'required',
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                            $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            if (!Books::where('slug', $slug)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -564,7 +564,7 @@ class Resources extends Controller
 
 
             //* getting Item information
-            $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf')->find(e(trim(decrypt($id))));
+            $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf')->where('slug', e(trim($slug)))->first();
 
             if ($resourceInfo === null) {
                 return ApiResponseHandler::successWithData([], "success", 200);
@@ -603,18 +603,18 @@ class Resources extends Controller
 
 
     //* Get Resource Episodes
-    function get_resources_episodes($id)
+    function get_resources_episodes($slug)
     {
         try {
             //* Validating response
-            $validator = Validator::make(['id' => $id], [
-                'id' =>  [
+            $validator = Validator::make(['slug' => $slug], [
+                'slug' =>  [
                     'required',
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                            $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            // $decryptedId = decrypt($value);
+                            if (!Books::where('slug', $value)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -628,10 +628,18 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
+            $getBook = Books::where('slug', $slug)->first();
 
+            $book_id = '';
+            if ($getBook) {
+                $book_id = $getBook->id;
+            } else {
+                // Handle the case where the book is not found
+                return ApiResponseHandler::error($validator->messages(), 404);
+            }
             //* getting Resouce Episodes
 
-            $episodes = AppMaterialItem::select('id', 'title', 'image_file', 'sequence',)->where('appmaterial_id', decrypt(e(trim($id))))
+            $episodes = AppMaterialItem::select('id', 'title', 'image_file', 'sequence',)->where('appmaterial_id', $book_id)
                 ->limit(50)
                 ->get();
 
@@ -664,19 +672,19 @@ class Resources extends Controller
 
 
     //* Wishlist
-    function wishlist($id)
+    function wishlist($slug)
     {
         try {
 
             //* Validating response
-            $validator = Validator::make(['id' => $id], [
-                'id' =>  [
+            $validator = Validator::make(['slug' => $slug], [
+                'slug' =>  [
                     'required',
                     'string',
                     function ($attribute, $value, $fail) {
                         try {
-                            $decryptedId = decrypt($value);
-                            if (!Books::where('id', $decryptedId)->exists()) {
+                            // $decryptedslug = decrypt($value);
+                            if (!Books::where('id', $value)->exists()) {
                                 return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
                             }
                         } catch (\Exception $e) {
@@ -693,14 +701,22 @@ class Resources extends Controller
             //* getting customer information
             $user = auth('customers')->user();
 
+            $getBook = Books::where('slug', $slug)->first();
 
+            $book_id = '';
+            if ($getBook) {
+                $book_id = $getBook->id;
+            } else {
+                // Handle the case where the book is not found
+                return ApiResponseHandler::error($validator->messages(), 404);
+            }
             //* getting Resouce Episodes
-            $isResourceExists = Wishlists::where('user_id', $user->id)->where('book_id', decrypt(e(trim($id))))->first();
+            $isResourceExists = Wishlists::where('user_id', $user->id)->where('book_id',$book_id)->first();
 
             if ($isResourceExists === null) {
                 $resource = new Wishlists();
                 $resource->user_id = $user->id;
-                $resource->book_id = decrypt(e(trim($id)));
+                $resource->book_id = $book_id;
                 $resource->save();
                 return ApiResponseHandler::success("ADDED_TO_WISHLIST", 200);
             }
@@ -738,7 +754,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews');
+            $query = Books::select('id','slug' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews');
 
 
             if ($age != 0) {
