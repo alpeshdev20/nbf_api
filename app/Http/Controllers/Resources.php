@@ -564,13 +564,13 @@ class Resources extends Controller
 
 
             //* getting Item information
-            $resourceInfo = Books::select('id', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf')->where('slug', e(trim($slug)))->first();
+            $resourceInfo = Books::select('id', 'slug', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf')->where('slug', e(trim($slug)))->first();
 
             if ($resourceInfo === null) {
                 return ApiResponseHandler::successWithData([], "success", 200);
             }
 
-            $relatedResources = Books::select('id', 'book_name', 'book_image', 'author', 'publisher_id', 'material_type', 'rating', 'reviews')->where('subject_id', $resourceInfo->subject_id)->where('id', "!=", $resourceInfo->id)->inRandomOrder()
+            $relatedResources = Books::select('id','slug', 'book_name', 'book_image', 'author', 'publisher_id', 'material_type', 'rating', 'reviews')->where('subject_id', $resourceInfo->subject_id)->where('id', "!=", $resourceInfo->id)->inRandomOrder()
                 ->limit(20)
                 ->get();
 
@@ -651,14 +651,15 @@ class Resources extends Controller
                     $data->resource_name = $data->title;
                     // $data->material_type = getMaterialTypeInfo($data->material_type)['material_type'] ?? "";
                     $data->resource_image = $data->image_file ? env('RESOURCES_URL') . $data->image_file : "";
-
+                    $data->slug = "test";
+                    $data->material_type = 'audio-books';
                     unset($data->id);
                     unset($data->title);
                     unset($data->image_file);
                     $finalResponse[] = $data;
                 }
             }
-
+            // return $finalResponse;
             usort($finalResponse, function ($a, $b) {
                 return $a['sequence'] <=> $b['sequence'];
             });

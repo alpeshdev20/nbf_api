@@ -215,7 +215,7 @@ class Consumers extends Controller
 
             foreach ($wishlists as $resource) {
                 //* Getting Book Info
-                $resourceInfo = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('id', $resource->book_id)
+                $resourceInfo = Books::select('id','slug', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('id', $resource->book_id)
                     ->first();
 
 
@@ -263,7 +263,7 @@ class Consumers extends Controller
 
             foreach ($library as $resource) {
                 //* Getting Book Info
-                $resourceInfo = Books::select('id', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('id', $resource->book_id)
+                $resourceInfo = Books::select('id','slug', 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('id', $resource->book_id)
                     ->first();
 
 
