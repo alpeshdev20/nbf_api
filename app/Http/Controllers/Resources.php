@@ -310,7 +310,7 @@ class Resources extends Controller
                 return ApiResponseHandler::error($validator->messages(), 400);
             }
 
-            $query = Books::select('id','slug' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 5);
+            $query = Books::select('id','slug' ,'folder_name' , 'book_name', 'book_image', 'author', 'material_type', 'rating', 'reviews')->where('material_type', 6);
 
 
             if ($age != 0) {
@@ -389,7 +389,7 @@ class Resources extends Controller
             $userType = ''; // Default value or handle error appropriately
         }
         //* getting Item information
-        $resourceInfo = Books::select('id', 'slug', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->where('slug', trim($slug))->first();
+        $resourceInfo = Books::select('id', 'slug', 'folder_name', 'year', 'tags', 'summary', 'language', 'material_type', 'mat_category', 'genre_id', 'genre_id', 'subject_id', 'publisher_id', 'book_name', 'book_image', 'publisher_id', 'author', 'book_pdf', 'length', 'Isbn_Code','table_of_content', 'author_detail')->where('slug', trim($slug))->first();
         $resourceInfoId = $resourceInfo->id;
 
         //if ($resourceInfo->mat_category == 0) {
