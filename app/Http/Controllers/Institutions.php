@@ -109,8 +109,15 @@ class Institutions extends Controller
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
             $destinationPath = 'uploads/NBF_Publishers_Authors_Resource_Catalogue';
-            $fileName = time() . '_' . $file->getClientOriginalName();
+            $fileName = time() . '_' . str_replace([' ', '-'], '_', $file->getClientOriginalName());
+            
+            // Move the file to the destination
             $file->move(public_path($destinationPath), $fileName);
+        
+            // Set the file permissions to 777
+            chmod(public_path($destinationPath) . '/' . $fileName, 0777);
+        
+            // Update the publisher model
             $publisher->resource_catalogue = $fileName;
         }
 

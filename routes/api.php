@@ -128,6 +128,12 @@ Route::middleware('api-auth')->group(function () {
     //! Institutions Registration
     Route::get('/publishers/{start}/{limit}', [Institutions::class, 'publisher_info']);
 
+    //get all blog
+    Route::get('/blogs/{start}/{limit}', [Resources::class, 'Get_blogs']);
+
+    // get single blog
+    Route::get('/blog/{slug}', [Resources::class, 'Get_BlogInfo']);
+
     //! api-auth Middleware end
 });
 
