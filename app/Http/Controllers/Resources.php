@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHandler;
 use App\Models\AppMaterialItem;
+use App\Models\Blogs;
 use App\Models\Books;
 use App\Models\SubscriptionPlans;
 use App\Models\UsersActiveSubscriptions;
@@ -790,6 +791,84 @@ class Resources extends Controller
                 }
             }
 
+            return ApiResponseHandler::successWithData($finalResponse, "success", 200);
+        } catch (\Exception $e) {
+            return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
+        }
+    }
+
+    // get all blogs list
+    function Get_blogs($start, $limit)
+    {
+
+        try {
+
+            //* Validating response
+            $validator = Validator::make(['start' => $start, 'limit' => $limit], [
+                'start' => 'required|numeric|min:0',
+                'limit' => 'required|numeric|min:1',
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponseHandler::error($validator->messages(), 400);
+            }
+
+            $query = Blogs::select('id', 'slug', 'title', 'content', 'slug', 'image')
+            ->where('is_published', 1)
+            ->whereNull('deleted_at');
+            $resources = $query->orderBy('id', 'DESC')->get();
+
+            $finalResponse = [];
+
+            if (!$resources->isEmpty()) {
+                foreach ($resources as $data) {
+                    $data->resource_id = encrypt((string) $data->id);
+                    $data->slug = $data->slug;
+                    $data->title = $data->title;
+                    // $data->image = $data->image ? env('RESOURCES_URL') . $data->image : "";
+                    $data->image = env('RESOURCES_URL') . "blogs/" . $data->image;
+                    $finalResponse[] = $data;
+                }
+            }
+            return ApiResponseHandler::successWithData($finalResponse, "success", 200);
+        } catch (\Exception $e) {
+            return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
+        }
+    }
+
+    // get specifi blog by slug name
+    function Get_BlogInfo($slug)
+    {
+
+        try {
+
+            //* Validating response
+            //* Validating response
+            $validator = Validator::make(['slug' => $slug], [
+                'slug' => 'required|min:0',
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponseHandler::error($validator->messages(), 400);
+            }
+
+            $query = Blogs::select('id', 'slug', 'title', 'content', 'slug', 'image')
+            ->where('is_published', 1)
+            ->whereNull('deleted_at')
+            ->where('slug', $slug);
+            $resources = $query->orderBy('id', 'DESC')->get();
+
+            $finalResponse = [];
+
+            if (!$resources->isEmpty()) {
+                foreach ($resources as $data) {
+                    $data->resource_id = encrypt((string) $data->id);
+                    $data->slug = $data->slug;
+                    $data->title = $data->title;
+                    $data->image = env('RESOURCES_URL') . "blogs/" . $data->image;
+                    $finalResponse[] = $data;
+                }
+            }
             return ApiResponseHandler::successWithData($finalResponse, "success", 200);
         } catch (\Exception $e) {
             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
