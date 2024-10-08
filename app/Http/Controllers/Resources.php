@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHandler;
+use App\Models\App_Ads;
 use App\Models\AppMaterialItem;
 use App\Models\Blogs;
 use App\Models\Books;
@@ -869,6 +870,37 @@ class Resources extends Controller
                     $finalResponse[] = $data;
                 }
             }
+            return ApiResponseHandler::successWithData($finalResponse, "success", 200);
+        } catch (\Exception $e) {
+            return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);
+        }
+    }
+
+    // get specifi blog by slug name
+    function Get_Ads()
+    {
+        try {
+
+            $query = App_Ads::select('id', 'image', 'link')
+            ->where('active', 1)
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'DESC');
+        
+        $resources = $query->get();
+        
+        $finalResponse = [];
+        
+        if ($resources->isNotEmpty()) {
+            foreach ($resources as $data) {
+                $data->resource_id = encrypt((string) $data->id);
+                $data->link = $data->link; // This line is redundant; you can remove it if not needed
+                $data->image = env('RESOURCES_URL') . "banner/" . $data->image;
+                $finalResponse[] = $data;
+            }
+        }
+        
+        // Optionally return or use $finalResponse as needed
+        return response()->json($finalResponse); // If you're returning a JSON response
             return ApiResponseHandler::successWithData($finalResponse, "success", 200);
         } catch (\Exception $e) {
             return ApiResponseHandler::error("INTERNAL_SERVER_ERROR", 500);

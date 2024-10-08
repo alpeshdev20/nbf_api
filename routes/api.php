@@ -134,6 +134,8 @@ Route::middleware('api-auth')->group(function () {
     // get single blog
     Route::get('/blog/{slug}', [Resources::class, 'Get_BlogInfo']);
 
+    // Get ads and their links
+    Route::get('/ads', [Resources::class, 'Get_Ads']);
     //! api-auth Middleware end
 });
 
